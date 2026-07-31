@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoş Geldin Prensesim</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 90%;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #ff758c;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        p {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            color: #e0e0e0;
+        }
+
+        .sub-text {
+            font-size: 0.9em;
+            color: #ffb6c1;
+            margin-top: 15px;
+            animation: pulse 1.5s infinite;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-align: center;
+            outline: none;
+            margin-bottom: 15px;
+        }
+
+        input[type="password"]::placeholder {
+            color: #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.05em;
+            border: none;
+            border-radius: 10px;
+            background: #ff758c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #ff7eb3;
+        }
+
+        .hint-btn {
+            background: transparent;
+            border: 1px solid #ff758c;
+            color: #ff758c;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            padding: 8px;
+        }
+
+        .hint-btn:hover {
+            background: rgba(255, 117, 140, 0.2);
+        }
+
+        .hint-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: #ffe6e8;
+            border-left: 3px solid #ff758c;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. ADIM: Karşılama Ekranı -->
+    <div class="card" id="welcome-screen" onclick="showPasswordScreen()">
+        <h1>Merhaba Prensesim ❤️</h1>
+        <p class="sub-text">Devam etmek için ekrana tıkla...</p>
+    </div>
+
+    <!-- 2. ADIM: Şifre Ekranı -->
+    <div class="card hidden" id="password-screen">
+        <h1>Şifre nedir sence???</h1>
+        
+        <!-- İpucu Mesaj Alanı -->
+        <div id="hint-text-box" class="hint-box hidden">
+            💡 <b>İpucu:</b> Kendi doğduğun yılı yaz!
+        </div>
+
+        <!-- İpucu Butonu -->
+        <button id="hint-btn" class="hint-btn hidden" onclick="toggleHint()">İpucu İster Misin?</button>
+
+        <input type="password" id="pass-input" placeholder="Şifreyi giriniz...">
+        <button onclick="checkPassword()">Giriş Yap</button>
+    </div>
+
+    <script>
+        let wrongCount = 0;
+
+        // Karşılama ekranından şifre ekranına geçiş
+        function showPasswordScreen() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('password-screen').classList.remove('hidden');
+        }
+
+        // İpucu butonunu ve metnini açma
+        function toggleHint() {
+            document.getElementById('hint-text-box').classList.remove('hidden');
+            document.getElementById('hint-btn').classList.add('hidden');
+        }
+
+        // Şifre kontrolü
+        function checkPassword() {
+            const input = document.getElementById('pass-input').value.trim();
+            
+            // Şifre: 2012
+            if (input === "2012") {
+                // Doğruysa ana sayfaya git
+                window.location.href = "anasayfa.html";
+            } else {
+                wrongCount++;
+                alert("Yanlış şifre birtanem, tekrar dene! ❤️");
+                
+                // 1 kez yanlış girilince İpucu Butonu görünür
+                if (wrongCount >= 1) {
+                    document.getElementById('hint-btn').classList.remove('hidden');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
