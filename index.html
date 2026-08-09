@@ -44,7 +44,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 192, 203, 0.3);
+            background: rgba(255, 192, 203, 0.25);
             z-index: -1;
         }
 
@@ -55,11 +55,9 @@
             backdrop-filter: blur(8px);
             padding: 35px 25px;
             border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             max-width: 420px;
             width: 90%;
-            cursor: pointer;
-            transition: all 0.4s ease;
             border: 2px solid #ffb6c1;
         }
 
@@ -83,10 +81,9 @@
             color: #4a148c;
         }
 
-        /* Yavaşça Belirme Animasyonu */
         .fade-in-text {
             opacity: 0;
-            animation: fadeIn 2.5s forwards ease-in-out;
+            animation: fadeIn 2s forwards ease-in-out;
         }
 
         @keyframes fadeIn {
@@ -113,10 +110,6 @@
             text-align: center;
             outline: none;
             margin-bottom: 15px;
-        }
-
-        input[type="password"]::placeholder {
-            color: #888;
         }
 
         button {
@@ -158,10 +151,6 @@
             border-left: 4px solid #d81b60;
         }
 
-        .hidden {
-            display: none !important;
-        }
-
         @keyframes pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
@@ -171,42 +160,43 @@
 </head>
 <body>
 
-    <!-- Arka Plan Videomuz -->
+    <!-- Arka Plan Videosu -->
     <video autoplay loop muted playsinline id="bg-video">
+        <source src="./bunnybackgorund.mp4" type="video/mp4">
         <source src="bunnybackgorund.mp4" type="video/mp4">
     </video>
     <div class="overlay"></div>
 
     <!-- 1. EKRAN: Karşılama -->
-    <div class="card" id="screen-1" onclick="goToScreen2()">
+    <div class="card" id="screen-1" onclick="goToScreen2()" style="cursor: pointer;">
         <span class="bunny-icon">🐰</span>
         <h1>kelimenin tam anlamıyla doğum günü hediyenin içine hoş geldin meleğim</h1>
         <p class="sub-text">Devam etmek için tıkla...</p>
     </div>
 
-    <!-- 2. EKRAN: Yavaş Beliren Uzun Mesaj -->
-    <div class="card hidden" id="screen-2" onclick="goToScreen3()">
+    <!-- 2. EKRAN: Uzun Mesaj (Açılışta Tamamen Gizli) -->
+    <div class="card" id="screen-2" onclick="goToScreen3()" style="display: none; cursor: pointer;">
         <span class="bunny-icon">✨</span>
         <p class="fade-in-text">
             öncellikle doğum günün kutlu olsun minik prensesim bu sene çok uslu bir kız oldun ve çok iyi işler çıkardın ve belki bu hediyeden fazlasını hak ediyorsun ama elimden gleen bu eminim bayılacaksın ama şimdi istersen siteye geçelim ama öncesinde bazı güvenlik protokolleri meleğim
         </p>
-        <p class="sub-text hidden" id="screen-2-btn">güvenlik protokolüne geçmek için tıkla</p>
+        <p class="sub-text" id="screen-2-btn" style="display: none;">güvenlik protokolüne geçmek için tıkla</p>
     </div>
 
-    <!-- 3. EKRAN: Güvenlik Protokolü / Şifre (Sadece 2. ekrandan sonra açılır) -->
-    <div class="card hidden" style="cursor: default;" id="screen-3">
+    <!-- 3. EKRAN: Şifre Ekranı (Açılışta Tamamen Gizli) -->
+    <div class="card" id="screen-3" style="display: none;">
         <span class="bunny-icon">🔒</span>
         <h1>Güvenlik Protokolü</h1>
 
-        <!-- 2 Yanlış Sonrası Çıkan İpucu Soru Alanı -->
-        <div id="help-question-area" class="hidden">
+        <!-- İpucu Sorusu -->
+        <div id="help-question-area" style="display: none;">
             <p style="font-weight: bold; color: #d81b60; margin-bottom: 10px;">yardımmı lazım meleğim?</p>
             <button class="choice-btn" onclick="selectChoice('yes')">evet lütfenn</button>
             <button class="choice-btn" onclick="selectChoice('no')">yoo ben çok zekiyim ben çözerim</button>
         </div>
 
-        <!-- İpucu Yanıt Kutusu -->
-        <div id="hint-response-box" class="hint-box hidden"></div>
+        <!-- İpucu Cevabı -->
+        <div id="hint-response-box" class="hint-box" style="display: none;"></div>
 
         <input type="password" id="pass-input" placeholder="Şifreyi giriniz...">
         <button onclick="checkPassword()">Giriş Yap</button>
@@ -216,20 +206,18 @@
         let wrongCount = 0;
 
         function goToScreen2() {
-            document.getElementById('screen-1').classList.add('hidden');
-            document.getElementById('screen-2').classList.remove('hidden');
+            document.getElementById('screen-1').style.display = 'none';
+            document.getElementById('screen-2').style.display = 'block';
 
-            // Yazı yavaşça belirdikten sonra geçiş yazısını göster
             setTimeout(() => {
-                document.getElementById('screen-2-btn').classList.remove('hidden');
-            }, 2200);
+                document.getElementById('screen-2-btn').style.display = 'block';
+            }, 2000);
         }
 
         function goToScreen3() {
-            // Sadece alt geçiş yazısı belirdikten sonra tıklanınca geçiş yapar
-            if (!document.getElementById('screen-2-btn').classList.contains('hidden')) {
-                document.getElementById('screen-2').classList.add('hidden');
-                document.getElementById('screen-3').classList.remove('hidden');
+            if (document.getElementById('screen-2-btn').style.display !== 'none') {
+                document.getElementById('screen-2').style.display = 'none';
+                document.getElementById('screen-3').style.display = 'block';
             }
         }
 
@@ -242,16 +230,15 @@
                 wrongCount++;
                 alert("Üzgünüm, bu şifre doğru değildi. Tekrar dene!");
                 
-                // 2 kez yanlış girilince yardım sorusu çıkar
                 if (wrongCount >= 2) {
-                    document.getElementById('help-question-area').classList.remove('hidden');
+                    document.getElementById('help-question-area').style.display = 'block';
                 }
             }
         }
 
         function selectChoice(option) {
             const responseBox = document.getElementById('hint-response-box');
-            document.getElementById('help-question-area').classList.add('hidden');
+            document.getElementById('help-question-area').style.display = 'none';
 
             if (option === 'yes') {
                 responseBox.innerHTML = "benden duyduğunu söyleme ama şifre senin doğum yılın olabilirmiş";
@@ -259,7 +246,7 @@
                 responseBox.innerHTML = "hadi ya prensesim öylemiymiş neyse madem bende şifrenin senin doğum yılın olduğunu söylemem";
             }
 
-            responseBox.classList.remove('hidden');
+            responseBox.style.display = 'block';
         }
     </script>
 </body>
