@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoş Geldin 🐰</title>
+    <title>Doğum Günün Kutlu Olsun 🐰</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffc0cb; /* Tatlı pembe */
+            background-color: #ffc0cb;
             color: #4a148c;
             height: 100vh;
             display: flex;
@@ -21,52 +21,92 @@
             align-items: center;
             overflow: hidden;
             text-align: center;
+            position: relative;
+        }
+
+        /* Arka Plan Videosu */
+        #bg-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+        }
+
+        /* Video Üzerine Hafif Pembe Katman */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 192, 203, 0.25);
+            z-index: 0;
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            padding: 40px 30px;
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 240, 245, 0.92);
+            backdrop-filter: blur(8px);
+            padding: 35px 25px;
             border-radius: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 420px;
             width: 90%;
             cursor: pointer;
             transition: all 0.4s ease;
-            border: 2px solid #ff8da1;
+            border: 2px solid #ffb6c1;
         }
 
         .bunny-icon {
-            font-size: 3em;
+            font-size: 2.5em;
             margin-bottom: 10px;
             display: block;
         }
 
         h1 {
-            font-size: 2em;
-            color: #c2185b;
+            font-size: 1.8em;
+            color: #d81b60;
             margin-bottom: 15px;
         }
 
         p {
-            font-size: 1.1em;
-            margin-bottom: 20px;
-            line-height: 1.5;
-            color: #311b92;
+            font-size: 1.05em;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            color: #4a148c;
+        }
+
+        /* Yavaşça Belirme Animasyonu (Typewriter/Fade Etkisi) */
+        .fade-in-text {
+            opacity: 0;
+            animation: fadeIn 2.5s forwards ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .sub-text {
             font-size: 0.9em;
-            color: #880e4f;
+            color: #ad1457;
             margin-top: 15px;
             animation: pulse 1.5s infinite;
+            font-weight: bold;
         }
 
         input[type="password"] {
             width: 100%;
             padding: 12px 15px;
             font-size: 1.1em;
-            border: 2px solid #c2185b;
+            border: 2px solid #d81b60;
             border-radius: 12px;
             background: rgba(255, 255, 255, 0.9);
             color: #4a148c;
@@ -82,31 +122,30 @@
         button {
             width: 100%;
             padding: 12px;
-            font-size: 1.05em;
+            font-size: 1em;
             border: none;
             border-radius: 12px;
-            background: #c2185b;
+            background: #d81b60;
             color: white;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.3s ease;
+            margin-top: 5px;
         }
 
         button:hover {
-            background: #ad1457;
+            background: #c2185b;
         }
 
-        .hint-btn {
-            background: transparent;
-            border: 1px dashed #c2185b;
-            color: #c2185b;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-            padding: 8px;
+        .choice-btn {
+            background: #ffffff;
+            color: #d81b60;
+            border: 2px solid #d81b60;
+            margin-bottom: 8px;
         }
 
-        .hint-btn:hover {
-            background: rgba(194, 24, 91, 0.1);
+        .choice-btn:hover {
+            background: #ffe4e8;
         }
 
         .hint-box {
@@ -116,7 +155,7 @@
             margin-bottom: 15px;
             font-size: 0.95em;
             color: #880e4f;
-            border-left: 4px solid #c2185b;
+            border-left: 4px solid #d81b60;
         }
 
         .hidden {
@@ -132,41 +171,66 @@
 </head>
 <body>
 
-    <!-- 1. ADIM: Karşılama Ekranı -->
-    <div class="card" id="welcome-screen" onclick="showPasswordScreen()">
+    <!-- Arka Plan Videomuz -->
+    <video autoplay muted loop playsinline id="bg-video">
+        <source src="bunnybackgorund.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <!-- 1. EKRAN: Karşılama -->
+    <div class="card" id="screen-1" onclick="goToScreen2()">
         <span class="bunny-icon">🐰</span>
-        <h1>Merhaba Prensesim</h1>
-        <p class="sub-text">Hadi bakalım, içeri girmek için ekrana tıkla...</p>
+        <h1>kelimenin tam anlamıyla doğum günü hediyenin içine hoş geldin meleğim</h1>
+        <p class="sub-text">Devam etmek için tıkla...</p>
     </div>
 
-    <!-- 2. ADIM: Şifre Ekranı -->
-    <div class="card hidden" id="password-screen">
-        <span class="bunny-icon">🥕</span>
-        <h1>Şifre nedir sence???</h1>
-        
-        <!-- İpucu Mesaj Alanı -->
-        <div id="hint-text-box" class="hint-box hidden">
-            <b>İpucu:</b> Kendi doğduğun yılı yaz! 🐾
+    <!-- 2. EKRAN: Yavaş Beliren Uzun Mesaj -->
+    <div class="card hidden" id="screen-2" onclick="goToScreen3()">
+        <span class="bunny-icon">✨</span>
+        <p class="fade-in-text" id="long-message">
+            öncellikle doğum günün kutlu olsun minik prensesim bu sene çok uslu bir kız oldun ve çok iyi işler çıkardın ve belki bu hediyeden fazlasını hak ediyorsun ama elimden gleen bu eminim bayılacaksın ama şimdi istersen siteye geçelim ama öncesinde bazı güvenlik protokolleri meleğim
+        </p>
+        <p class="sub-text hidden" id="screen-2-btn">güvenlik protokolüne geçmek için tıkla</p>
+    </div>
+
+    <!-- 3. EKRAN: Güvenlik Protokolü / Şifre -->
+    <div class="card" style="cursor: default;" id="screen-3">
+        <span class="bunny-icon">🔒</span>
+        <h1>Güvenlik Protokolü</h1>
+
+        <!-- 2 Yanlış Sonrası Çıkan İpucu Soru Alanı -->
+        <div id="help-question-area" class="hidden">
+            <p style="font-weight: bold; color: #d81b60;">yardımmı lazım meleğim?</p>
+            <button class="choice-btn" onclick="selectChoice('yes')">evet lütfenn</button>
+            <button class="choice-btn" onclick="selectChoice('no')">yoo ben çok zekiyim ben çözerim</button>
         </div>
 
-        <!-- İpucu Butonu -->
-        <button id="hint-btn" class="hint-btn hidden" onclick="toggleHint()">Küçük bir ipucu ister misin?</button>
+        <!-- İpucu Yanıt Kutusu -->
+        <div id="hint-response-box" class="hint-box hidden"></div>
 
         <input type="password" id="pass-input" placeholder="Şifreyi giriniz...">
-        <button onclick="checkPassword()">Aç bakalım kapıyı!</button>
+        <button onclick="checkPassword()">Giriş Yap</button>
     </div>
 
     <script>
         let wrongCount = 0;
 
-        function showPasswordScreen() {
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('password-screen').classList.remove('hidden');
+        function goToScreen2() {
+            document.getElementById('screen-1').classList.add('hidden');
+            document.getElementById('screen-2').classList.remove('hidden');
+
+            // Yazı yavaşça göründükten sonra tıklama butonunu belirginleştir
+            setTimeout(() => {
+                document.getElementById('screen-2-btn').classList.remove('hidden');
+            }, 2200);
         }
 
-        function toggleHint() {
-            document.getElementById('hint-text-box').classList.remove('hidden');
-            document.getElementById('hint-btn').classList.add('hidden');
+        function goToScreen3() {
+            // Sadece alt kısımdaki yazı belirdiyse geçişe izin ver
+            if (!document.getElementById('screen-2-btn').classList.contains('hidden')) {
+                document.getElementById('screen-2').classList.add('hidden');
+                document.getElementById('screen-3').classList.remove('hidden');
+            }
         }
 
         function checkPassword() {
@@ -176,12 +240,26 @@
                 window.location.href = "anasayfa.html";
             } else {
                 wrongCount++;
-                alert("Üzgünüm, bu pek doğru değildi. Tekrar dene!");
+                alert("Üzgünüm, bu şifre doğru değildi. Tekrar dene!");
                 
-                if (wrongCount >= 1) {
-                    document.getElementById('hint-btn').classList.remove('hidden');
+                // 2 kez yanlış girilince yardım sorusu alanı çıkar
+                if (wrongCount >= 2) {
+                    document.getElementById('help-question-area').classList.remove('hidden');
                 }
             }
+        }
+
+        function selectChoice(option) {
+            const responseBox = document.getElementById('hint-response-box');
+            document.getElementById('help-question-area').classList.add('hidden');
+
+            if (option === 'yes') {
+                responseBox.innerHTML = "benden duyduğunu söyleme ama şifre senin doğum yılın olabilirmiş";
+            } else if (option === 'no') {
+                responseBox.innerHTML = "hadi ya prensesim öylemiymiş neyse madem bende şifrenin senin doğum yılın olduğunu söylemem";
+            }
+
+            responseBox.classList.remove('hidden');
         }
     </script>
 </body>
