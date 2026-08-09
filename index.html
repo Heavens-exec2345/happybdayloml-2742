@@ -26,27 +26,26 @@
 
         /* Arka Plan Videosu */
         #bg-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
+            position: fixed;
+            right: 0;
+            bottom: 0;
             min-width: 100%;
             min-height: 100%;
             width: auto;
             height: auto;
-            z-index: -1;
-            transform: translate(-50%, -50%);
+            z-index: -2;
             object-fit: cover;
         }
 
         /* Video Üzerine Hafif Pembe Katman */
         .overlay {
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 192, 203, 0.25);
-            z-index: 0;
+            background: rgba(255, 192, 203, 0.3);
+            z-index: -1;
         }
 
         .card {
@@ -71,9 +70,10 @@
         }
 
         h1 {
-            font-size: 1.8em;
+            font-size: 1.7em;
             color: #d81b60;
             margin-bottom: 15px;
+            line-height: 1.4;
         }
 
         p {
@@ -83,7 +83,7 @@
             color: #4a148c;
         }
 
-        /* Yavaşça Belirme Animasyonu (Typewriter/Fade Etkisi) */
+        /* Yavaşça Belirme Animasyonu */
         .fade-in-text {
             opacity: 0;
             animation: fadeIn 2.5s forwards ease-in-out;
@@ -172,7 +172,7 @@
 <body>
 
     <!-- Arka Plan Videomuz -->
-    <video autoplay muted loop playsinline id="bg-video">
+    <video autoplay loop muted playsinline id="bg-video">
         <source src="bunnybackgorund.mp4" type="video/mp4">
     </video>
     <div class="overlay"></div>
@@ -187,20 +187,20 @@
     <!-- 2. EKRAN: Yavaş Beliren Uzun Mesaj -->
     <div class="card hidden" id="screen-2" onclick="goToScreen3()">
         <span class="bunny-icon">✨</span>
-        <p class="fade-in-text" id="long-message">
+        <p class="fade-in-text">
             öncellikle doğum günün kutlu olsun minik prensesim bu sene çok uslu bir kız oldun ve çok iyi işler çıkardın ve belki bu hediyeden fazlasını hak ediyorsun ama elimden gleen bu eminim bayılacaksın ama şimdi istersen siteye geçelim ama öncesinde bazı güvenlik protokolleri meleğim
         </p>
         <p class="sub-text hidden" id="screen-2-btn">güvenlik protokolüne geçmek için tıkla</p>
     </div>
 
-    <!-- 3. EKRAN: Güvenlik Protokolü / Şifre -->
-    <div class="card" style="cursor: default;" id="screen-3">
+    <!-- 3. EKRAN: Güvenlik Protokolü / Şifre (Sadece 2. ekrandan sonra açılır) -->
+    <div class="card hidden" style="cursor: default;" id="screen-3">
         <span class="bunny-icon">🔒</span>
         <h1>Güvenlik Protokolü</h1>
 
         <!-- 2 Yanlış Sonrası Çıkan İpucu Soru Alanı -->
         <div id="help-question-area" class="hidden">
-            <p style="font-weight: bold; color: #d81b60;">yardımmı lazım meleğim?</p>
+            <p style="font-weight: bold; color: #d81b60; margin-bottom: 10px;">yardımmı lazım meleğim?</p>
             <button class="choice-btn" onclick="selectChoice('yes')">evet lütfenn</button>
             <button class="choice-btn" onclick="selectChoice('no')">yoo ben çok zekiyim ben çözerim</button>
         </div>
@@ -219,14 +219,14 @@
             document.getElementById('screen-1').classList.add('hidden');
             document.getElementById('screen-2').classList.remove('hidden');
 
-            // Yazı yavaşça göründükten sonra tıklama butonunu belirginleştir
+            // Yazı yavaşça belirdikten sonra geçiş yazısını göster
             setTimeout(() => {
                 document.getElementById('screen-2-btn').classList.remove('hidden');
             }, 2200);
         }
 
         function goToScreen3() {
-            // Sadece alt kısımdaki yazı belirdiyse geçişe izin ver
+            // Sadece alt geçiş yazısı belirdikten sonra tıklanınca geçiş yapar
             if (!document.getElementById('screen-2-btn').classList.contains('hidden')) {
                 document.getElementById('screen-2').classList.add('hidden');
                 document.getElementById('screen-3').classList.remove('hidden');
@@ -242,7 +242,7 @@
                 wrongCount++;
                 alert("Üzgünüm, bu şifre doğru değildi. Tekrar dene!");
                 
-                // 2 kez yanlış girilince yardım sorusu alanı çıkar
+                // 2 kez yanlış girilince yardım sorusu çıkar
                 if (wrongCount >= 2) {
                     document.getElementById('help-question-area').classList.remove('hidden');
                 }
