@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoş Geldin Prensesim</title>
+    <title>Hoş Geldin 🐰</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,8 +13,8 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: white;
+            background-color: #ffc0cb; /* Tatlı pembe */
+            color: #4a148c;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -24,35 +24,40 @@
         }
 
         .card {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
             padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 90%;
             cursor: pointer;
             transition: all 0.4s ease;
+            border: 2px solid #ff8da1;
+        }
+
+        .bunny-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            display: block;
         }
 
         h1 {
             font-size: 2em;
-            color: #ff758c;
+            color: #c2185b;
             margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
         p {
             font-size: 1.1em;
             margin-bottom: 20px;
             line-height: 1.5;
-            color: #e0e0e0;
+            color: #311b92;
         }
 
         .sub-text {
             font-size: 0.9em;
-            color: #ffb6c1;
+            color: #880e4f;
             margin-top: 15px;
             animation: pulse 1.5s infinite;
         }
@@ -61,17 +66,17 @@
             width: 100%;
             padding: 12px 15px;
             font-size: 1.1em;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            border: 2px solid #c2185b;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #4a148c;
             text-align: center;
             outline: none;
             margin-bottom: 15px;
         }
 
         input[type="password"]::placeholder {
-            color: #ddd;
+            color: #888;
         }
 
         button {
@@ -79,8 +84,8 @@
             padding: 12px;
             font-size: 1.05em;
             border: none;
-            border-radius: 10px;
-            background: #ff758c;
+            border-radius: 12px;
+            background: #c2185b;
             color: white;
             font-weight: bold;
             cursor: pointer;
@@ -88,30 +93,30 @@
         }
 
         button:hover {
-            background: #ff7eb3;
+            background: #ad1457;
         }
 
         .hint-btn {
             background: transparent;
-            border: 1px solid #ff758c;
-            color: #ff758c;
+            border: 1px dashed #c2185b;
+            color: #c2185b;
             margin-bottom: 15px;
             font-size: 0.9em;
             padding: 8px;
         }
 
         .hint-btn:hover {
-            background: rgba(255, 117, 140, 0.2);
+            background: rgba(194, 24, 91, 0.1);
         }
 
         .hint-box {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 10px;
-            border-radius: 8px;
+            background: #ffe4e8;
+            padding: 12px;
+            border-radius: 10px;
             margin-bottom: 15px;
             font-size: 0.95em;
-            color: #ffe6e8;
-            border-left: 3px solid #ff758c;
+            color: #880e4f;
+            border-left: 4px solid #c2185b;
         }
 
         .hidden {
@@ -129,54 +134,50 @@
 
     <!-- 1. ADIM: Karşılama Ekranı -->
     <div class="card" id="welcome-screen" onclick="showPasswordScreen()">
-        <h1>Merhaba Prensesim ❤️</h1>
-        <p class="sub-text">Devam etmek için ekrana tıkla...</p>
+        <span class="bunny-icon">🐰</span>
+        <h1>Merhaba Prensesim</h1>
+        <p class="sub-text">Hadi bakalım, içeri girmek için ekrana tıkla...</p>
     </div>
 
     <!-- 2. ADIM: Şifre Ekranı -->
     <div class="card hidden" id="password-screen">
+        <span class="bunny-icon">🥕</span>
         <h1>Şifre nedir sence???</h1>
         
         <!-- İpucu Mesaj Alanı -->
         <div id="hint-text-box" class="hint-box hidden">
-            💡 <b>İpucu:</b> Kendi doğduğun yılı yaz!
+            <b>İpucu:</b> Kendi doğduğun yılı yaz! 🐾
         </div>
 
         <!-- İpucu Butonu -->
-        <button id="hint-btn" class="hint-btn hidden" onclick="toggleHint()">İpucu İster Misin?</button>
+        <button id="hint-btn" class="hint-btn hidden" onclick="toggleHint()">Küçük bir ipucu ister misin?</button>
 
         <input type="password" id="pass-input" placeholder="Şifreyi giriniz...">
-        <button onclick="checkPassword()">Giriş Yap</button>
+        <button onclick="checkPassword()">Aç bakalım kapıyı!</button>
     </div>
 
     <script>
         let wrongCount = 0;
 
-        // Karşılama ekranından şifre ekranına geçiş
         function showPasswordScreen() {
             document.getElementById('welcome-screen').classList.add('hidden');
             document.getElementById('password-screen').classList.remove('hidden');
         }
 
-        // İpucu butonunu ve metnini açma
         function toggleHint() {
             document.getElementById('hint-text-box').classList.remove('hidden');
             document.getElementById('hint-btn').classList.add('hidden');
         }
 
-        // Şifre kontrolü
         function checkPassword() {
             const input = document.getElementById('pass-input').value.trim();
             
-            // Şifre: 2012
             if (input === "2012") {
-                // Doğruysa ana sayfaya git
                 window.location.href = "anasayfa.html";
             } else {
                 wrongCount++;
-                alert("Yanlış şifre birtanem, tekrar dene! ❤️");
+                alert("Üzgünüm, bu pek doğru değildi. Tekrar dene!");
                 
-                // 1 kez yanlış girilince İpucu Butonu görünür
                 if (wrongCount >= 1) {
                     document.getElementById('hint-btn').classList.remove('hidden');
                 }
