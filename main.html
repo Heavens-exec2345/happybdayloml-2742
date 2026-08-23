@@ -1,1 +1,286 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sana Özel... 🌸</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #d63384;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Arka Plan Videosu */
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -2;
+            object-fit: cover;
+        }
+
+        /* Video Üstü Hafif Karartma/Pembeleştirme */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 230, 242, 0.4);
+            z-index: -1;
+        }
+
+        /* Sahte Yükleme Ekranı */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffe6f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ffb3d9;
+            border-top: 5px solid #ff1493;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Slayt Kart Kutusu */
+        .slide-container {
+            width: 90%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(255, 105, 180, 0.3);
+            border: 2px solid #ffb3d9;
+            text-align: center;
+            position: relative;
+            backdrop-filter: blur(5px);
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        .slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        p {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+        }
+
+        .btn {
+            background-color: #ff66b2;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(255, 102, 178, 0.4);
+            transition: 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Mektup Butonu ve Emojisi */
+        .envelope-box {
+            margin: 20px 0;
+            cursor: pointer;
+        }
+        .envelope-icon {
+            font-size: 80px;
+            animation: pulse 1.5s infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        /* Beyaz Mektup Ekranı (Pop-up) */
+        #letter-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 10000;
+            padding: 30px 20px;
+            overflow: hidden;
+        }
+        .letter-content {
+            max-width: 500px;
+            margin: 0 auto;
+            color: #333;
+            text-align: left;
+            position: absolute;
+            width: 85%;
+            left: 7.5%;
+            top: 100%;
+            animation: scrollUp 45s linear forwards;
+        }
+        @keyframes scrollUp {
+            0% { top: 90%; }
+            100% { top: -120%; }
+        }
+        .close-letter-btn {
+            position: fixed;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            background: #ff1493;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Arka Plan Videomuz -->
+    <video autoplay muted loop id="bg-video">
+        <source src="bunnybackgorund.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
+    <!-- Sahte Yükleme Ekranı -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <p style="color: #d63384; font-weight: bold;">Sürpriz Hazırlanıyor... 🌸</p>
+    </div>
+
+    <!-- Slayt Alanı -->
+    <div class="slide-container">
+
+        <!-- Slayt 1 -->
+        <div class="slide active" id="slide-1">
+            <p>Vay be, cidden bulmacayı çözeceğini zannetmiyordum. İyi iş çıkardın prensesim, aferin sana! Şimdi bugünün turuna beraber çıkacağız. Bence gayet beğeneceksin hediyeni... Yani en azından ben öyle düşünüyorum sanırım.</p>
+            <button class="btn" onclick="nextSlide(2)">Devam Et ➔</button>
+        </div>
+
+        <!-- Slayt 2 -->
+        <div class="slide" id="slide-2">
+            <p>Eh bilirsin, konuşmalarla aram pek iyi değildi hiçbir zaman. İlişkimizin başından beri de böyleydi ama yani sana karşı olan hislerimi birazcık daha dökmek istedim. Bu metinleri yazarken bayağı bir şiirden alıntı yaptık, o derece yani. Umarım ki nasıl hissettiğimi anlatabilirim.</p>
+            <button class="btn" onclick="nextSlide(3)">Devam Et ➔</button>
+        </div>
+
+        <!-- Slayt 3 (Mektup) -->
+        <div class="slide" id="slide-3">
+            <p><b>Mektubu açmak için tıklayınız</b></p>
+            <div class="envelope-box" onclick="openLetter()">
+                <div class="envelope-icon">✉️</div>
+            </div>
+            <button class="btn" id="slide3-next" style="display:none;" onclick="nextSlide(4)">Devam Et ➔</button>
+        </div>
+
+        <!-- Slayt 4 -->
+        <div class="slide" id="slide-4">
+            <p>Evet... Bunu da aradan çıkardığımıza göre ana hediyemize geçebiliriz. Hadi bakalım doğum günü kızının hediye vakti!</p>
+            <button class="btn" onclick="nextSlide(5)">Devam Et ➔</button>
+        </div>
+
+        <!-- Slayt 5 -->
+        <div class="slide" id="slide-5">
+            <p>Pekala, konsept o kadar da kompleks değil. Olay şu ki bu site kelimenin tam anlamıyla sana ait. Her parçası senin için özel olarak kodlandı ve oluşturuldu, özel tarafı da bu zaten. Ama onun dışında ana tema olarak 7 mini oyunumuz var. Çok karışık bir şeyler bekleme; 7 minik oyun, her biri gittikçe zorlaşıyor. Ne kadar çok puanın olursa her oyun o kadar zorlaşır. Ayrıca sitede her oyunda 300 skor yaparsan benden özel bir hediye kazanacaksın, ne olduğu sürpriz olsun ama!</p>
+            <button class="btn" onclick="nextSlide(6)">Devam Et ➔</button>
+        </div>
+
+        <!-- Slayt 6 -->
+        <div class="slide" id="slide-6">
+            <p>Veee hepsi bu kadar! Şimdi sitenin tadını çıkarabilirsin. Mini oyunlar çeşitli, yani birinden sıkıldın mı öbürüne geçebilirsin. Yüksek skorların kaydedilir. İyi eğlenceler dilerim bir tanem!</p>
+            <button class="btn" onclick="goToGames()">Oyun Paneline Geç 🎮</button>
+        </div>
+
+    </div>
+
+    <!-- Mektup Pop-up Ekranı -->
+    <div id="letter-modal">
+        <div class="letter-content">
+            <p>Pek dile getiremesem de seni sandığından bile çok seviyorum; her şeyden, herkesten çok... İçimdeki yaraları sarıp kapatan bir merhem gibisin adeta. Kelimelerle aram pek iyi olmadığı için her an söyleyemesem de seni çok seviyorum. En neşeli halinle, dertli halinle, kızgınlığınla, gözyaşınla, efkarınla... Her halinle çok seviyorum seni.</p>
+            <p>Hayatımda kimseye sana duyduğum gibi bir şefkat, bir empati, bir bağ duymadım. Benim için öylesine değerlisin ki... Hani derler ya, 'Ben onun gözlerine aşık oldum' diye; ben senin o güzel gözlerine aşık değildim hiçbir zaman. Ben senin o güzel kalbine aşıktım. Ve bu gerçek, her zaman ve her daim benim aşka olan bakış açım olacak.</p>
+            <p>Benim için aşk; yüzünün, gözünün, kaşının ne kadar güzel olduğu değil, kalbinin güzelliğidir. Sen ne kadar garip olduğunu düşünsen de benim için kalbin mükemmel ve hep öyle kalacak. İçten içe öyle şefkatli, öyle zarif, öylesine tatlısın ki benim gibi bir mahluk sana aşık olmasın da ne yapsın?</p>
+            <p>Ne kadar tartışsak da ne kadar arada bir kavga etsek de hep birbirimize geri döneceğiz. Çünkü biz birbirimize bağlıyız; görünüşlerimize değil, kalplerimize aşığız. Ve kalbe olan aşk, en yıkılmaz olanıdır. Seni seviyorum ve her zaman, her daim yanında olacağım. İyi gününde de kötü gününde de...</p>
+            <p style="text-align: right; font-weight: bold; margin-top: 20px;">Yazan:<br><i>Biricik sevdiciğin</i></p>
+        </div>
+        <button class="close-letter-btn" onclick="closeLetter()">Mektubu Kapat ✖</button>
+    </div>
+
+    <script>
+        // Sahte yükleme ekranını 2.5 saniye sonra kaldırır
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 2500);
+        });
+
+        // Slaytlar arası geçiş
+        function nextSlide(slideNum) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById('slide-' + slideNum).classList.add('active');
+        }
+
+        // Mektubu Açma
+        function openLetter() {
+            document.getElementById('letter-modal').style.display = 'block';
+            document.getElementById('slide3-next').style.display = 'inline-block';
+        }
+
+        // Mektubu Kapatma
+        function closeLetter() {
+            document.getElementById('letter-modal').style.display = 'none';
+        }
+
+        // Oyun Paneline Yönlendirme
+        function goToGames() {
+            window.location.href = 'minigamepanel.html';
+        }
+    </script>
+</body>
+</html>
 
