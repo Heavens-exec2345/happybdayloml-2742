@@ -8,13 +8,26 @@
         * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffe6f2;
             color: #d63384;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Arka Plan Videosu */
+        #bg-video {
+            position: fixed; right: 0; bottom: 0;
+            min-width: 100%; min-height: 100%;
+            z-index: -2; object-fit: cover;
+        }
+        .overlay {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(255, 230, 242, 0.45);
+            z-index: -1;
         }
 
         /* Sahte Yükleme Ekranı */
@@ -32,7 +45,7 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* Başlık & Menü Grid Düzeni */
-        h1 { margin: 20px 10px 15px 10px; font-size: 1.6rem; text-align: center; text-shadow: 1px 1px 2px #ffb3d9; }
+        h1 { margin: 25px 10px 15px 10px; font-size: 1.6rem; text-align: center; text-shadow: 1px 1px 2px #fff; }
         
         #panel-menu {
             width: 95%; max-width: 500px;
@@ -40,10 +53,11 @@
             padding: 10px;
         }
         .game-card {
-            background: white; border: 2px solid #ffb3d9; border-radius: 15px;
+            background: rgba(255, 255, 255, 0.9); border: 2px solid #ffb3d9; border-radius: 15px;
             padding: 12px 5px; text-align: center; font-weight: bold; font-size: 0.85rem;
             box-shadow: 0 4px 10px rgba(255, 105, 180, 0.2); cursor: pointer;
             transition: transform 0.2s; display: flex; flex-direction: column; align-items: center; gap: 5px;
+            backdrop-filter: blur(3px);
         }
         .game-card:active { transform: scale(0.95); }
         .game-card:last-child { grid-column: span 3; max-width: 60%; justify-self: center; }
@@ -51,28 +65,30 @@
         /* Oyun Konteyneri ve Canvas */
         #game-container {
             display: none; width: 100%; max-width: 420px;
-            flex-direction: column; align-items: center; position: relative;
+            flex-direction: column; align-items: center; position: relative; margin-top: 10px;
         }
         .top-bar {
-            width: 100%; display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; background: rgba(255, 255, 255, 0.8); border-radius: 15px; margin-bottom: 8px;
+            width: 360px; display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .hearts-box img { width: 22px; height: 22px; margin-right: 2px; }
         .score-box { font-weight: bold; font-size: 0.9rem; }
         
         #canvas-wrapper {
             position: relative; width: 360px; height: 500px;
-            border: 3px solid #ffb3d9; border-radius: 20px; overflow: hidden; background: #fff0f6;
+            border: 3px solid #ffb3d9; border-radius: 20px; overflow: hidden; background: #fff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
         }
         canvas { width: 100%; height: 100%; display: block; }
 
         /* Game Over Ekranı */
         #game-over-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.75); flex-direction: column; justify-content: center;
+            background: rgba(0, 0, 0, 0.8); flex-direction: column; justify-content: center;
             align-items: center; z-index: 100; color: white; text-align: center;
         }
-        #game-over-overlay img { width: 100px; margin-bottom: 15px; }
+        #game-over-overlay img { width: 90px; margin-bottom: 15px; }
         #game-over-overlay h2 { font-size: 2rem; color: #ff66b2; margin-bottom: 15px; }
         
         .btn {
@@ -85,6 +101,12 @@
 </head>
 <body>
 
+    <!-- Arka Plan Videomuz -->
+    <video autoplay muted loop id="bg-video">
+        <source src="bunnybackgorund.mp4" type="video/mp4">
+    </video>
+    <div class="overlay"></div>
+
     <!-- Sahte Yükleme Ekranı -->
     <div id="loader">
         <div class="spinner"></div>
@@ -94,7 +116,7 @@
     <!-- Panel Başlığı -->
     <h1 id="panel-title">🌸 Minik Prensesin Oyun Paneli 🌸</h1>
 
-    <!-- 3 Yan Yana + 1 Alt Menü -->
+    <!-- Menü Butonları -->
     <div id="panel-menu">
         <div class="game-card" onclick="startGame(1)">🌸 Bunny Flap</div>
         <div class="game-card" onclick="startGame(2)">🌸 Bunny Rush</div>
@@ -105,7 +127,7 @@
         <div class="game-card" onclick="startGame(7)">🌸 Memory Tap</div>
     </div>
 
-    <!-- Oyun Ekranı -->
+    <!-- Oyun Alanı -->
     <div id="game-container">
         <div class="top-bar">
             <div class="hearts-box" id="hearts-display"></div>
@@ -119,7 +141,7 @@
 
             <!-- Game Over Overlay -->
             <div id="game-over-overlay">
-                <img src="BunnyDead.gif" alt="Oyun Bitti">
+                <img id="dead-gif-img" src="BunnyDead.gif" alt="Oyun Bitti">
                 <h2>OYUN BİTTİ</h2>
                 <div>
                     <button class="btn" onclick="restartCurrentGame()">Yeniden Başlat 🔄</button>
@@ -130,31 +152,33 @@
     </div>
 
     <script>
-        // Asset Yüklemeleri
+        // Asset Yönetimi
         const assets = {};
         const assetList = [
             'heart.png', 'carrot.png', 'star.png', 'bomb.png', 'rock.png',
             'hole.png', 'littlewolf.png', 'longpipe.png', 'smallpipe.png',
-            'giftblock.png', 'taretzone.png', 'ground.png', 'background.png',
+            'giftblock.png', 'taretzone.png', 'background.png',
             'BunnyJump.gif', 'BunnyLieDown.gif', 'BunnyRun.gif', 'BunnyIdle.gif', 'BunnyDead.gif'
         ];
 
+        let loadedCount = 0;
         assetList.forEach(name => {
             const img = new Image();
             img.src = name;
+            img.onload = () => { loadedCount++; };
             assets[name] = img;
         });
 
-        // Sahte Yükleme Kapatma
+        // Yükleme Ekranı
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 600);
-            }, 2000);
+            }, 1800);
         });
 
-        // Genel Oyun Değişkenleri
+        // Genel Sistem Değişkenleri
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let currentGame = 0;
@@ -164,7 +188,7 @@
         let lives = 3;
         let isGameOver = false;
 
-        // Tıklama / Dokunma Dinleyicisi
+        // Tıklama Yakalayıcı
         canvas.addEventListener('pointerdown', (e) => {
             if (isGameOver) return;
             const rect = canvas.getBoundingClientRect();
@@ -182,7 +206,6 @@
             }
             document.getElementById('high-score').innerText = highScore;
 
-            // Canları Çizdirme
             const hDisplay = document.getElementById('hearts-display');
             hDisplay.innerHTML = '';
             for (let i = 0; i < lives; i++) {
@@ -192,12 +215,12 @@
 
         function triggerGameOver() {
             isGameOver = true;
-            cancelAnimationFrame(gameLoopId);
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
             document.getElementById('game-over-overlay').style.display = 'flex';
         }
 
         function backToPanel() {
-            cancelAnimationFrame(gameLoopId);
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('game-over-overlay').style.display = 'none';
             document.getElementById('panel-menu').style.display = 'grid';
@@ -222,7 +245,6 @@
 
             if (gameLoopId) cancelAnimationFrame(gameLoopId);
 
-            // Oyun Başlatıcılar
             if (gameId === 1) initBunnyFlap();
             else if (gameId === 2) initBunnyRush();
             else if (gameId === 3) initPrecisionTap();
@@ -234,43 +256,40 @@
 
         let handleInput = (x, y) => {};
 
-        /* ================= 1. BUNNY FLAP ================= */
+        /* ================= 1. BUNNY FLAP (KUSURSUZ) ================= */
         function initBunnyFlap() {
-            let bY = 200, bV = 0, gravity = 0.35, jump = -6;
-            let pipes = [], bombs = [], frame = 0;
+            let bY = 200, bV = 0, gravity = 0.38, jump = -6.5;
+            let pipes = [], frame = 0;
             let isJumping = false;
 
             handleInput = () => {
                 bV = jump;
                 isJumping = true;
-                setTimeout(() => isJumping = false, 300);
+                setTimeout(() => isJumping = false, 250);
             };
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
+                if(assets['background.png'].complete) ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
+
                 frame++;
                 bV += gravity; bY += bV;
 
-                if (frame % 110 === 0) {
-                    let gap = 130;
-                    let topH = Math.floor(Math.random() * (220 - 60)) + 60;
+                if (frame % 100 === 0) {
+                    let gap = 135;
+                    let topH = Math.floor(Math.random() * (220 - 70)) + 70;
                     pipes.push({ x: 360, top: topH, bottom: 500 - topH - gap, passed: false });
-                    if (score >= 20 && Math.random() > 0.4) {
-                        bombs.push({ x: 360 + 20, y: topH + gap/2 - 15, active: true });
-                    }
                 }
 
-                // Borular
                 for (let i = pipes.length - 1; i >= 0; i--) {
-                    let p = pipes[i]; p.x -= 2;
-                    ctx.drawImage(assets['longpipe.png'], p.x, 0, 45, p.top);
-                    ctx.drawImage(assets['smallpipe.png'], p.x, 500 - p.bottom, 45, p.bottom);
+                    let p = pipes[i]; p.x -= 2.2;
+                    ctx.drawImage(assets['longpipe.png'], p.x, 0, 48, p.top);
+                    ctx.drawImage(assets['smallpipe.png'], p.x, 500 - p.bottom, 48, p.bottom);
 
-                    if (!p.passed && p.x < 100) { p.passed = true; score += 5; updateUI(); }
+                    if (!p.passed && p.x < 100) { p.passed = true; score += 10; updateUI(); }
 
-                    // Çarpışma
-                    if (100 + 30 > p.x && 100 < p.x + 45) {
-                        if (bY < p.top || bY + 35 > 500 - p.bottom) {
+                    if (100 + 32 > p.x && 100 < p.x + 48) {
+                        if (bY < p.top || bY + 32 > 500 - p.bottom) {
                             lives--; updateUI();
                             if (lives <= 0) return triggerGameOver();
                             pipes.splice(i, 1); continue;
@@ -279,24 +298,10 @@
                     if (p.x < -50) pipes.splice(i, 1);
                 }
 
-                // Bombalar (20 Skor Sonrası)
-                for (let i = bombs.length - 1; i >= 0; i--) {
-                    let bm = bombs[i]; bm.x -= 2;
-                    if (bm.active) {
-                        ctx.drawImage(assets['bomb.png'], bm.x, bm.y, 30, 30);
-                        if (Math.hypot(100 - bm.x, bY - bm.y) < 28) {
-                            bm.active = false; lives--; updateUI();
-                            if (lives <= 0) return triggerGameOver();
-                        }
-                    }
-                    if (bm.x < -30) bombs.splice(i, 1);
-                }
-
-                // Tavşan Çizimi
                 let img = isJumping ? assets['BunnyJump.gif'] : assets['BunnyLieDown.gif'];
                 ctx.drawImage(img, 100, bY, 40, 40);
 
-                if (bY > 470 || bY < -20) {
+                if (bY > 460 || bY < -10) {
                     lives--; updateUI();
                     if (lives <= 0) return triggerGameOver();
                     bY = 200; bV = 0;
@@ -307,33 +312,33 @@
             loop();
         }
 
-        /* ================= 2. BUNNY RUSH ================= */
+        /* ================= 2. BUNNY RUSH (BACKGROUND TABAKALI) ================= */
         function initBunnyRush() {
-            let bY = 380, bV = 0, gravity = 0.5, isGrounded = true;
-            let obstacles = [], frame = 0, speed = 3;
+            let bY = 370, bV = 0, gravity = 0.55, isGrounded = true;
+            let obstacles = [], frame = 0, speed = 3.2;
 
             handleInput = () => {
-                if (isGrounded) { bV = -11; isGrounded = false; score += 10; updateUI(); }
+                if (isGrounded) { bV = -11.5; isGrounded = false; score += 10; updateUI(); }
             };
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                frame++; speed += 0.001;
-                ctx.drawImage(assets['ground.png'], 0, 420, 360, 80);
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
 
+                frame++; speed += 0.0008;
                 bV += gravity; bY += bV;
-                if (bY >= 380) { bY = 380; bV = 0; isGrounded = true; }
+                if (bY >= 370) { bY = 370; bV = 0; isGrounded = true; }
 
-                if (frame % Math.floor(120 / (speed/3)) === 0) {
+                if (frame % Math.floor(110 / (speed/3)) === 0) {
                     let type = Math.random() > 0.4 ? 'rock.png' : 'bomb.png';
                     obstacles.push({ x: 360, type: type });
                 }
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i]; obs.x -= speed;
-                    ctx.drawImage(assets[obs.type], obs.x, 390, 35, 35);
+                    ctx.drawImage(assets[obs.type], obs.x, 380, 38, 38);
 
-                    if (obs.x < 85 && obs.x > 45 && bY > 350) {
+                    if (obs.x < 85 && obs.x > 45 && bY > 340) {
                         lives--; updateUI();
                         obstacles.splice(i, 1);
                         if (lives <= 0) return triggerGameOver();
@@ -342,48 +347,71 @@
                     if (obs.x < -40) obstacles.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 45, 45);
+                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 48, 48);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        /* ================= 3. PRECISION TAP ================= */
+        /* ================= 3. PRECISION TAP (HIZLI & ÇOKLU KALP) ================= */
         function initPrecisionTap() {
-            let heartX = 0, heartY = 0, timer = 10, maxTime = 10, intervalId = null;
+            let hearts = [], timer = 5, maxTime = 5;
 
-            function spawnHeart() {
-                heartX = 80 + Math.random() * 180;
-                heartY = 150 + Math.random() * 180;
+            function spawnHearts() {
+                hearts = [];
+                let count = score >= 50 ? 3 : (score >= 20 ? 2 : 1);
+                for(let i=0; i<count; i++) {
+                    hearts.push({
+                        x: 70 + Math.random() * 200,
+                        y: 140 + Math.random() * 200,
+                        hit: false
+                    });
+                }
             }
 
             handleInput = (x, y) => {
-                if (Math.hypot(x - heartX, y - heartY) < 35) {
-                    score += 15;
-                    maxTime = Math.max(2, maxTime - 0.4);
+                hearts.forEach(h => {
+                    if (!h.hit && Math.hypot(x - h.x, y - h.y) < 35) {
+                        h.hit = true; score += 10; updateUI();
+                    }
+                });
+
+                if (hearts.every(h => h.hit)) {
+                    maxTime = Math.max(1.2, maxTime - 0.25);
                     timer = maxTime;
-                    updateUI(); spawnHeart();
+                    spawnHearts();
                 }
             };
 
-            spawnHeart();
-            intervalId = setInterval(() => {
-                timer -= 0.1;
-                if (timer <= 0) {
-                    lives--; updateUI(); timer = maxTime;
-                    if (lives <= 0) { clearInterval(intervalId); triggerGameOver(); }
-                }
-            }, 100);
+            spawnHearts();
+            let lastTime = Date.now();
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
                 ctx.drawImage(assets['taretzone.png'], 30, 100, 300, 300);
-                ctx.drawImage(assets['heart.png'], heartX - 20, heartY - 20, 40, 40);
+
+                let now = Date.now();
+                let dt = (now - lastTime) / 1000;
+                lastTime = now;
+
+                timer -= dt;
+                if (timer <= 0) {
+                    lives--; updateUI();
+                    maxTime = Math.max(1.2, maxTime - 0.2);
+                    timer = maxTime;
+                    if (lives <= 0) return triggerGameOver();
+                    spawnHearts();
+                }
+
+                hearts.forEach(h => {
+                    if(!h.hit) ctx.drawImage(assets['heart.png'], h.x - 18, h.y - 18, 36, 36);
+                });
 
                 ctx.fillStyle = "#ff1493";
-                ctx.fillRect(30, 30, (timer / maxTime) * 300, 15);
+                ctx.fillRect(30, 430, Math.max(0, (timer / maxTime)) * 300, 15);
+
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
-                else clearInterval(intervalId);
             }
             loop();
         }
@@ -391,22 +419,22 @@
         /* ================= 4. BUNNY ATTACK ================= */
         function initBunnyAttack() {
             let holes = [
-                {x: 50, y: 120}, {x: 210, y: 120},
-                {x: 50, y: 240}, {x: 210, y: 240},
-                {x: 50, y: 360}, {x: 210, y: 360}
+                {x: 45, y: 110}, {x: 205, y: 110},
+                {x: 45, y: 230}, {x: 205, y: 230},
+                {x: 45, y: 350}, {x: 205, y: 350}
             ];
             let activeHole = -1, type = 'wolf', popTimer = 0;
 
             function spawn() {
                 activeHole = Math.floor(Math.random() * 6);
-                type = Math.random() > 0.3 ? 'wolf' : 'bunny';
-                popTimer = Math.max(40, 120 - score * 2);
+                type = Math.random() > 0.35 ? 'wolf' : 'bunny';
+                popTimer = Math.max(25, 90 - score * 1.5);
             }
 
             handleInput = (x, y) => {
                 if (activeHole !== -1) {
                     let h = holes[activeHole];
-                    if (x > h.x && x < h.x + 100 && y > h.y && y < h.y + 80) {
+                    if (x > h.x && x < h.x + 100 && y > h.y - 20 && y < h.y + 80) {
                         if (type === 'wolf') { score += 10; updateUI(); }
                         else { lives--; updateUI(); if (lives <= 0) triggerGameOver(); }
                         activeHole = -1;
@@ -416,11 +444,13 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
+
                 holes.forEach((h, idx) => {
-                    ctx.drawImage(assets['hole.png'], h.x, h.y, 100, 80);
+                    ctx.drawImage(assets['hole.png'], h.x, h.y, 105, 85);
                     if (idx === activeHole) {
                         let img = type === 'wolf' ? assets['littlewolf.png'] : assets['BunnyIdle.gif'];
-                        ctx.drawImage(img, h.x + 20, h.y - 30, 60, 60);
+                        ctx.drawImage(img, h.x + 22, h.y - 32, 60, 60);
                     }
                 });
 
@@ -430,25 +460,26 @@
                         if (type === 'wolf') { lives--; updateUI(); if (lives <= 0) triggerGameOver(); }
                         activeHole = -1;
                     }
-                } else if (Math.random() < 0.03) spawn();
+                } else if (Math.random() < 0.04) spawn();
 
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        /* ================= 5. CARROT CATCH ================= */
+        /* ================= 5. CARROT CATCH (BACKGROUND TABAKALI) ================= */
         function initCarrotCatch() {
-            let bX = 160, items = [], frame = 0, speed = 2.5;
+            let bX = 155, items = [], frame = 0, speed = 2.8;
 
-            handleInput = (x) => { bX = x - 25; };
+            handleInput = (x) => { bX = Math.max(10, Math.min(300, x - 25)); };
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['ground.png'], 0, 430, 360, 70);
-                frame++; speed += 0.001;
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
 
-                if (frame % 40 === 0) {
+                frame++; speed += 0.0009;
+
+                if (frame % 38 === 0) {
                     let r = Math.random();
                     let t = r < 0.6 ? 'carrot.png' : (r < 0.8 ? 'star.png' : 'bomb.png');
                     items.push({ x: 20 + Math.random() * 320, y: 0, type: t });
@@ -456,9 +487,9 @@
 
                 for (let i = items.length - 1; i >= 0; i--) {
                     let it = items[i]; it.y += speed;
-                    ctx.drawImage(assets[it.type], it.x, it.y, 30, 30);
+                    ctx.drawImage(assets[it.type], it.x, it.y, 32, 32);
 
-                    if (it.y > 400 && it.x > bX - 20 && it.x < bX + 50) {
+                    if (it.y > 390 && it.x > bX - 22 && it.x < bX + 52) {
                         if (it.type === 'carrot.png') score += 10;
                         else if (it.type === 'star.png') score += 25;
                         else { lives--; if (lives <= 0) return triggerGameOver(); }
@@ -467,25 +498,21 @@
                     if (it.y > 480) items.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], bX, 390, 50, 50);
+                ctx.drawImage(assets['BunnyRun.gif'], bX, 395, 50, 50);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        /* ================= 6. PERFECT TIMING ================= */
+        /* ================= 6. PERFECT TIMING (REFAKTE EDİLMİŞ) ================= */
         function initPerfectTiming() {
-            let blocks = [{ x: 130, y: 440, w: 100 }], current = { x: 0, y: 400, w: 100, dir: 1 };
-            let speed = 3;
-
+            let targetX = 130, boxX = 0, boxDir = 1, speed = 3.5;
+            
             handleInput = () => {
-                let prev = blocks[blocks.length - 1];
-                let diff = current.x - prev.x;
-                if (Math.abs(diff) < current.w) {
-                    score += 20; updateUI();
-                    blocks.push({ x: current.x, y: current.y, w: current.w });
-                    current.y -= 35; current.x = 0; speed += 0.3;
-                    if (blocks.length > 8) blocks.forEach(b => b.y += 35);
+                let diff = Math.abs(boxX - targetX);
+                if (diff < 30) {
+                    score += 15; speed += 0.4; updateUI();
+                    targetX = 30 + Math.random() * 200;
                 } else {
                     lives--; updateUI();
                     if (lives <= 0) triggerGameOver();
@@ -494,11 +521,17 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                blocks.forEach(b => ctx.drawImage(assets['giftblock.png'], b.x, b.y, b.w, 30));
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
 
-                current.x += speed * current.dir;
-                if (current.x < 0 || current.x + current.w > 360) current.dir *= -1;
-                ctx.drawImage(assets['giftblock.png'], current.x, current.y, current.w, 30);
+                // Hedef Bölge
+                ctx.strokeStyle = "#ff1493"; ctx.lineWidth = 3;
+                ctx.strokeRect(targetX, 220, 80, 50);
+                ctx.drawImage(assets['star.png'], targetX + 25, 230, 30, 30);
+
+                // Sağa Sola Kayan Blok
+                boxX += speed * boxDir;
+                if (boxX < 0 || boxX > 280) boxDir *= -1;
+                ctx.drawImage(assets['giftblock.png'], boxX, 220, 80, 50);
 
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
@@ -507,39 +540,42 @@
 
         /* ================= 7. MEMORY TAP ================= */
         function initMemoryTap() {
-            let sequence = [], userSeq = [], showing = false, level = 1;
+            let sequence = [], userSeq = [], showing = false;
             const icons = ['star.png', 'bomb.png', 'rock.png', 'heart.png'];
 
             function nextRound() {
                 showing = true; userSeq = [];
                 sequence.push(icons[Math.floor(Math.random() * 4)]);
                 let idx = 0;
+                
                 let int = setInterval(() => {
                     ctx.clearRect(0, 0, 360, 500);
+                    ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
                     ctx.drawImage(assets[sequence[idx]], 130, 120, 100, 100);
                     idx++;
                     if (idx >= sequence.length) {
                         clearInterval(int);
-                        setTimeout(() => { showing = false; drawButtons(); }, 800);
+                        setTimeout(() => { showing = false; drawButtons(); }, 700);
                     }
-                }, 700);
+                }, 650);
             }
 
             function drawButtons() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.fillStyle = "#ff66b2"; ctx.font = "16px Arial";
-                ctx.fillText("Sırayı Hatırla ve Bas!", 110, 80);
+                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
+                ctx.fillStyle = "#ff1493"; ctx.font = "bold 16px Arial";
+                ctx.fillText("Sırayı Hatırla ve Dokun!", 90, 80);
                 icons.forEach((ic, i) => {
-                    let x = (i % 2) * 140 + 50, y = Math.floor(i / 2) * 140 + 150;
-                    ctx.drawImage(assets[ic], x, y, 90, 90);
+                    let x = (i % 2) * 130 + 60, y = Math.floor(i / 2) * 130 + 150;
+                    ctx.drawImage(assets[ic], x, y, 85, 85);
                 });
             }
 
             handleInput = (x, y) => {
                 if (showing) return;
                 icons.forEach((ic, i) => {
-                    let bx = (i % 2) * 140 + 50, by = Math.floor(i / 2) * 140 + 150;
-                    if (x > bx && x < bx + 90 && y > by && y < by + 90) {
+                    let bx = (i % 2) * 130 + 60, by = Math.floor(i / 2) * 130 + 150;
+                    if (x > bx && x < bx + 85 && y > by && y < by + 85) {
                         userSeq.push(ic);
                         let step = userSeq.length - 1;
                         if (userSeq[step] !== sequence[step]) {
@@ -547,7 +583,7 @@
                             if (lives <= 0) triggerGameOver();
                             else nextRound();
                         } else if (userSeq.length === sequence.length) {
-                            score += 30; updateUI(); nextRound();
+                            score += 25; updateUI(); nextRound();
                         }
                     }
                 });
@@ -563,4 +599,3 @@
     </script>
 </body>
 </html>
-
