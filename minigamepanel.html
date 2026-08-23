@@ -17,7 +17,7 @@
             position: relative;
         }
 
-        /* Arka Plan Videosu */
+        /* Arka Plan Videomuz */
         #bg-video {
             position: fixed; right: 0; bottom: 0;
             min-width: 100%; min-height: 100%;
@@ -26,11 +26,11 @@
         .overlay {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(255, 230, 242, 0.45);
+            background: rgba(255, 230, 242, 0.35);
             z-index: -1;
         }
 
-        /* Sahte Yükleme Ekranı */
+        /* Yükleme Ekranı */
         #loader {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #ffe6f2; display: flex; flex-direction: column;
@@ -44,7 +44,7 @@
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Başlık & Menü Grid Düzeni */
+        /* Başlık & Menü Grid */
         h1 { margin: 25px 10px 15px 10px; font-size: 1.6rem; text-align: center; text-shadow: 1px 1px 2px #fff; }
         
         #panel-menu {
@@ -62,30 +62,48 @@
         .game-card:active { transform: scale(0.95); }
         .game-card:last-child { grid-column: span 3; max-width: 60%; justify-self: center; }
 
-        /* Oyun Konteyneri ve Canvas */
+        /* Oyun Konteyneri */
         #game-container {
             display: none; width: 100%; max-width: 420px;
             flex-direction: column; align-items: center; position: relative; margin-top: 10px;
         }
         .top-bar {
             width: 360px; display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 10px 15px; background: rgba(255, 255, 255, 0.85); border-radius: 15px; margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); backdrop-filter: blur(4px);
         }
         .hearts-box img { width: 22px; height: 22px; margin-right: 2px; }
         .score-box { font-weight: bold; font-size: 0.9rem; }
         
         #canvas-wrapper {
             position: relative; width: 360px; height: 500px;
-            border: 3px solid #ffb3d9; border-radius: 20px; overflow: hidden; background: #fff;
+            border: 3px solid #ffb3d9; border-radius: 20px; overflow: hidden;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background: transparent;
         }
-        canvas { width: 100%; height: 100%; display: block; }
+        canvas { width: 100%; height: 100%; display: block; background: transparent; }
 
-        /* Game Over Ekranı */
+        /* Alt Talimat Alanı */
+        .instruction-container {
+            width: 360px; margin-top: 10px; display: flex; flex-direction: column; align-items: center;
+        }
+        .info-btn {
+            background: rgba(255, 255, 255, 0.9); border: 2px solid #ff66b2; color: #d63384;
+            padding: 6px 16px; border-radius: 15px; font-weight: bold; font-size: 0.85rem;
+            cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.2s;
+        }
+        .info-btn:active { transform: scale(0.95); }
+        #instruction-text {
+            display: none; margin-top: 8px; width: 100%; background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #ffb3d9; border-radius: 12px; padding: 10px; text-align: center;
+            font-size: 0.82rem; color: #b30059; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            backdrop-filter: blur(4px);
+        }
+
+        /* Game Over Overlay */
         #game-over-overlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); flex-direction: column; justify-content: center;
+            background: rgba(0, 0, 0, 0.82); flex-direction: column; justify-content: center;
             align-items: center; z-index: 100; color: white; text-align: center;
         }
         #game-over-overlay img { width: 90px; margin-bottom: 15px; }
@@ -107,7 +125,7 @@
     </video>
     <div class="overlay"></div>
 
-    <!-- Sahte Yükleme Ekranı -->
+    <!-- Yükleme Ekranı -->
     <div id="loader">
         <div class="spinner"></div>
         <p style="color: #d63384; font-weight: bold;">Oyun Paneli Yükleniyor... 🌸</p>
@@ -116,7 +134,7 @@
     <!-- Panel Başlığı -->
     <h1 id="panel-title">🌸 Minik Prensesin Oyun Paneli 🌸</h1>
 
-    <!-- Menü Butonları -->
+    <!-- Menü Grid -->
     <div id="panel-menu">
         <div class="game-card" onclick="startGame(1)">🌸 Bunny Flap</div>
         <div class="game-card" onclick="startGame(2)">🌸 Bunny Rush</div>
@@ -149,10 +167,16 @@
                 </div>
             </div>
         </div>
+
+        <!-- Alt Talimat Butonu ve Kutusu -->
+        <div class="instruction-container">
+            <button class="info-btn" onclick="toggleInstruction()">Nasıl Oynanır? ❓</button>
+            <div id="instruction-text"></div>
+        </div>
     </div>
 
     <script>
-        // Asset Yönetimi
+        // Görsel Asset Yönetimi
         const assets = {};
         const assetList = [
             'heart.png', 'carrot.png', 'star.png', 'bomb.png', 'rock.png',
@@ -175,7 +199,7 @@
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 600);
-            }, 1800);
+            }, 1500);
         });
 
         // Genel Sistem Değişkenleri
@@ -187,6 +211,27 @@
         let highScore = 0;
         let lives = 3;
         let isGameOver = false;
+
+        // Oyun Talimatları Sözlüğü
+        const instructions = {
+            1: "Ekrana dokunarak tavşanı havada tut ve boruların arasından geç. Borulara çarparsan veya yere düşersen can kaybedersin!",
+            2: "Ekrana dokunarak zıpla ve gelen kayalardan/bombalardan kaç. Engellerin üzerinden zamanında atlayarak puan topla!",
+            3: "Ekranda beliren kalplere süre dolmadan hızlıca dokun. Skorun arttıkça tempo hızlanır ve aynı anda daha fazla kalp çıkar!",
+            4: "Çukurlardan çıkan kurtlara dokunarak onları avla ve puan kazan. Sakın tavşan dostlarına dokunma!",
+            5: "Parmağını ekranda kaydırarak tavşanı yönet. Yukarıdan düşen havuç ve yıldızları topla, bombalardan uzak dur!",
+            6: "Hızla kayan kutuyu tam ortadaki hedef h hizada yakalamak için ekrana dokun. Zamanlamayı kaçırırsan canın gider!",
+            7: "Ekranda sırayla gösterilen sembolleri aklında tut ve ardından doğru sırayla butonlara dokunarak deseni tamamla!"
+        };
+
+        function toggleInstruction() {
+            const infoBox = document.getElementById('instruction-text');
+            if (infoBox.style.display === 'block') {
+                infoBox.style.display = 'none';
+            } else {
+                infoBox.innerText = instructions[currentGame] || "Talimat bulunamadı.";
+                infoBox.style.display = 'block';
+            }
+        }
 
         // Tıklama Yakalayıcı
         canvas.addEventListener('pointerdown', (e) => {
@@ -223,6 +268,7 @@
             if (gameLoopId) cancelAnimationFrame(gameLoopId);
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('game-over-overlay').style.display = 'none';
+            document.getElementById('instruction-text').style.display = 'none';
             document.getElementById('panel-menu').style.display = 'grid';
             document.getElementById('panel-title').style.display = 'block';
             currentGame = 0;
@@ -230,6 +276,7 @@
 
         function restartCurrentGame() {
             document.getElementById('game-over-overlay').style.display = 'none';
+            document.getElementById('instruction-text').style.display = 'none';
             startGame(currentGame);
         }
 
@@ -241,6 +288,7 @@
             document.getElementById('panel-menu').style.display = 'none';
             document.getElementById('panel-title').style.display = 'none';
             document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('instruction-text').style.display = 'none';
             updateUI();
 
             if (gameLoopId) cancelAnimationFrame(gameLoopId);
@@ -256,7 +304,7 @@
 
         let handleInput = (x, y) => {};
 
-        /* ================= 1. BUNNY FLAP (KUSURSUZ) ================= */
+        /* ================= 1. BUNNY FLAP ================= */
         function initBunnyFlap() {
             let bY = 200, bV = 0, gravity = 0.38, jump = -6.5;
             let pipes = [], frame = 0;
@@ -270,8 +318,6 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                if(assets['background.png'].complete) ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
-
                 frame++;
                 bV += gravity; bY += bV;
 
@@ -312,9 +358,10 @@
             loop();
         }
 
-        /* ================= 2. BUNNY RUSH (BACKGROUND TABAKALI) ================= */
+        /* ================= 2. BUNNY RUSH (TABAKALI ZEMİN) ================= */
         function initBunnyRush() {
-            let bY = 370, bV = 0, gravity = 0.55, isGrounded = true;
+            let groundY = 360; // Zemin başlangıç çizgisi
+            let bY = groundY, bV = 0, gravity = 0.55, isGrounded = true;
             let obstacles = [], frame = 0, speed = 3.2;
 
             handleInput = () => {
@@ -323,11 +370,15 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
+
+                // Zemin / Tabaka Görseli
+                if (assets['background.png'].complete) {
+                    ctx.drawImage(assets['background.png'], 0, 420, 360, 80);
+                }
 
                 frame++; speed += 0.0008;
                 bV += gravity; bY += bV;
-                if (bY >= 370) { bY = 370; bV = 0; isGrounded = true; }
+                if (bY >= groundY) { bY = groundY; bV = 0; isGrounded = true; }
 
                 if (frame % Math.floor(110 / (speed/3)) === 0) {
                     let type = Math.random() > 0.4 ? 'rock.png' : 'bomb.png';
@@ -336,9 +387,9 @@
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i]; obs.x -= speed;
-                    ctx.drawImage(assets[obs.type], obs.x, 380, 38, 38);
+                    ctx.drawImage(assets[obs.type], obs.x, 382, 38, 38);
 
-                    if (obs.x < 85 && obs.x > 45 && bY > 340) {
+                    if (obs.x < 85 && obs.x > 45 && bY > 330) {
                         lives--; updateUI();
                         obstacles.splice(i, 1);
                         if (lives <= 0) return triggerGameOver();
@@ -347,13 +398,13 @@
                     if (obs.x < -40) obstacles.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 48, 48);
+                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 48, 60);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        /* ================= 3. PRECISION TAP (HIZLI & ÇOKLU KALP) ================= */
+        /* ================= 3. PRECISION TAP ================= */
         function initPrecisionTap() {
             let hearts = [], timer = 5, maxTime = 5;
 
@@ -388,7 +439,6 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
                 ctx.drawImage(assets['taretzone.png'], 30, 100, 300, 300);
 
                 let now = Date.now();
@@ -444,7 +494,6 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
 
                 holes.forEach((h, idx) => {
                     ctx.drawImage(assets['hole.png'], h.x, h.y, 105, 85);
@@ -467,7 +516,7 @@
             loop();
         }
 
-        /* ================= 5. CARROT CATCH (BACKGROUND TABAKALI) ================= */
+        /* ================= 5. CARROT CATCH (TABAKALI ZEMİN) ================= */
         function initCarrotCatch() {
             let bX = 155, items = [], frame = 0, speed = 2.8;
 
@@ -475,7 +524,11 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
+
+                // Zemin / Tabaka Görseli
+                if (assets['background.png'].complete) {
+                    ctx.drawImage(assets['background.png'], 0, 420, 360, 80);
+                }
 
                 frame++; speed += 0.0009;
 
@@ -489,22 +542,22 @@
                     let it = items[i]; it.y += speed;
                     ctx.drawImage(assets[it.type], it.x, it.y, 32, 32);
 
-                    if (it.y > 390 && it.x > bX - 22 && it.x < bX + 52) {
+                    if (it.y > 350 && it.x > bX - 22 && it.x < bX + 52) {
                         if (it.type === 'carrot.png') score += 10;
                         else if (it.type === 'star.png') score += 25;
                         else { lives--; if (lives <= 0) return triggerGameOver(); }
                         updateUI(); items.splice(i, 1); continue;
                     }
-                    if (it.y > 480) items.splice(i, 1);
+                    if (it.y > 420) items.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], bX, 395, 50, 50);
+                ctx.drawImage(assets['BunnyRun.gif'], bX, 360, 50, 60);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
         }
 
-        /* ================= 6. PERFECT TIMING (REFAKTE EDİLMİŞ) ================= */
+        /* ================= 6. PERFECT TIMING ================= */
         function initPerfectTiming() {
             let targetX = 130, boxX = 0, boxDir = 1, speed = 3.5;
             
@@ -521,14 +574,13 @@
 
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
 
                 // Hedef Bölge
                 ctx.strokeStyle = "#ff1493"; ctx.lineWidth = 3;
                 ctx.strokeRect(targetX, 220, 80, 50);
                 ctx.drawImage(assets['star.png'], targetX + 25, 230, 30, 30);
 
-                // Sağa Sola Kayan Blok
+                // Hareketli Blok
                 boxX += speed * boxDir;
                 if (boxX < 0 || boxX > 280) boxDir *= -1;
                 ctx.drawImage(assets['giftblock.png'], boxX, 220, 80, 50);
@@ -550,7 +602,6 @@
                 
                 let int = setInterval(() => {
                     ctx.clearRect(0, 0, 360, 500);
-                    ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
                     ctx.drawImage(assets[sequence[idx]], 130, 120, 100, 100);
                     idx++;
                     if (idx >= sequence.length) {
@@ -562,7 +613,6 @@
 
             function drawButtons() {
                 ctx.clearRect(0, 0, 360, 500);
-                ctx.drawImage(assets['background.png'], 0, 0, 360, 500);
                 ctx.fillStyle = "#ff1493"; ctx.font = "bold 16px Arial";
                 ctx.fillText("Sırayı Hatırla ve Dokun!", 90, 80);
                 icons.forEach((ic, i) => {
