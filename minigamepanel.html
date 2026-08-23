@@ -60,7 +60,10 @@
             backdrop-filter: blur(3px);
         }
         .game-card:active { transform: scale(0.95); }
-        .game-card:last-child { grid-column: span 3; max-width: 60%; justify-self: center; }
+        .instructions-card {
+            grid-column: span 3; max-width: 70%; justify-self: center;
+            background: #fff0f6; border-color: #ff66b2; color: #b30059;
+        }
 
         /* Oyun Konteyneri */
         #game-container {
@@ -69,8 +72,8 @@
         }
         .top-bar {
             width: 360px; display: flex; justify-content: space-between; align-items: center;
-            padding: 10px 15px; background: rgba(255, 255, 255, 0.85); border-radius: 15px; margin-bottom: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); backdrop-filter: blur(4px);
+            padding: 10px 15px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; margin-bottom: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .hearts-box img { width: 22px; height: 22px; margin-right: 2px; }
         .score-box { font-weight: bold; font-size: 0.9rem; }
@@ -79,25 +82,41 @@
             position: relative; width: 360px; height: 500px;
             border: 3px solid #ffb3d9; border-radius: 20px; overflow: hidden;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            background: transparent;
+            background: #ffffff;
         }
-        canvas { width: 100%; height: 100%; display: block; background: transparent; }
+        canvas { width: 100%; height: 100%; display: block; background: #ffffff; }
 
         /* Alt Talimat Alanı */
         .instruction-container {
             width: 360px; margin-top: 10px; display: flex; flex-direction: column; align-items: center;
         }
         .info-btn {
-            background: rgba(255, 255, 255, 0.9); border: 2px solid #ff66b2; color: #d63384;
+            background: rgba(255, 255, 255, 0.95); border: 2px solid #ff66b2; color: #d63384;
             padding: 6px 16px; border-radius: 15px; font-weight: bold; font-size: 0.85rem;
             cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: all 0.2s;
         }
         .info-btn:active { transform: scale(0.95); }
         #instruction-text {
-            display: none; margin-top: 8px; width: 100%; background: rgba(255, 255, 255, 0.92);
+            display: none; margin-top: 8px; width: 100%; background: rgba(255, 255, 255, 0.95);
             border: 1px solid #ffb3d9; border-radius: 12px; padding: 10px; text-align: center;
             font-size: 0.82rem; color: #b30059; line-height: 1.4; box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            backdrop-filter: blur(4px);
+        }
+
+        /* Modal / Genel Talimat Kutusu */
+        #all-instructions-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); z-index: 10000; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: #fff; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto;
+            border-radius: 20px; padding: 20px; border: 3px solid #ffb3d9; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .modal-content h3 { font-size: 1.2rem; color: #d63384; margin-bottom: 12px; text-align: center; }
+        .modal-item { margin-bottom: 10px; font-size: 0.82rem; line-height: 1.35; color: #444; }
+        .modal-item strong { color: #ff1493; }
+        .close-modal-btn {
+            display: block; margin: 15px auto 0 auto; background: #ff66b2; color: #fff;
+            border: none; padding: 8px 20px; border-radius: 15px; font-weight: bold; cursor: pointer;
         }
 
         /* Game Over Overlay */
@@ -143,6 +162,22 @@
         <div class="game-card" onclick="startGame(5)">🌸 Carrot Catch</div>
         <div class="game-card" onclick="startGame(6)">🌸 Perfect Timing</div>
         <div class="game-card" onclick="startGame(7)">🌸 Memory Tap</div>
+        <div class="game-card instructions-card" onclick="openAllInstructions()">📜 Talimatlar</div>
+    </div>
+
+    <!-- Genel Talimatlar Modal Kutusu -->
+    <div id="all-instructions-modal">
+        <div class="modal-content">
+            <h3>📜 Oyun Talimatları</h3>
+            <div class="modal-item"><strong>1. Bunny Flap:</strong> Ekrana dokunarak tavşanı havada tut ve boruların arasından geç. Borulara çarparsan veya yere düşersen can kaybedersin!</div>
+            <div class="modal-item"><strong>2. Bunny Rush:</strong> Ekrana dokunarak zıpla ve gelen kayalardan/bombalardan kaç. Engellerin üzerinden zamanında atlayarak puan topla!</div>
+            <div class="modal-item"><strong>3. Precision Tap:</strong> Ekranda beliren kalplere süre dolmadan hızlıca dokun. Skorun arttıkça tempo hızlanır ve aynı anda daha fazla kalp çıkar!</div>
+            <div class="modal-item"><strong>4. Bunny Attack:</strong> Çukurlardan çıkan kurtlara dokunarak onları avla ve puan kazan. Sakın tavşan dostlarına dokunma!</div>
+            <div class="modal-item"><strong>5. Carrot Catch:</strong> Parmağını ekranda kaydırarak tavşanı yönet. Yukarıdan düşen havuç ve yıldızları topla, bombalardan uzak dur!</div>
+            <div class="modal-item"><strong>6. Perfect Timing:</strong> Hızla kayan kutuyu tam ortadaki hedef hizada yakalamak için ekrana dokun. Zamanlamayı kaçırırsan canın gider!</div>
+            <div class="modal-item"><strong>7. Memory Tap:</strong> Ekranda sırayla gösterilen sembolleri aklında tut ve ardından doğru sırayla butonlara dokunarak deseni tamamla!</div>
+            <button class="close-modal-btn" onclick="closeAllInstructions()">Kapat ✖</button>
+        </div>
     </div>
 
     <!-- Oyun Alanı -->
@@ -181,7 +216,7 @@
         const assetList = [
             'heart.png', 'carrot.png', 'star.png', 'bomb.png', 'rock.png',
             'hole.png', 'littlewolf.png', 'longpipe.png', 'smallpipe.png',
-            'giftblock.png', 'taretzone.png', 'background.png',
+            'giftblock.png', 'taretzone.png',
             'BunnyJump.gif', 'BunnyLieDown.gif', 'BunnyRun.gif', 'BunnyIdle.gif', 'BunnyDead.gif'
         ];
 
@@ -199,7 +234,7 @@
                 const loader = document.getElementById('loader');
                 loader.style.opacity = '0';
                 setTimeout(() => loader.style.display = 'none', 600);
-            }, 1500);
+            }, 1200);
         });
 
         // Genel Sistem Değişkenleri
@@ -212,16 +247,22 @@
         let lives = 3;
         let isGameOver = false;
 
-        // Oyun Talimatları Sözlüğü
         const instructions = {
             1: "Ekrana dokunarak tavşanı havada tut ve boruların arasından geç. Borulara çarparsan veya yere düşersen can kaybedersin!",
             2: "Ekrana dokunarak zıpla ve gelen kayalardan/bombalardan kaç. Engellerin üzerinden zamanında atlayarak puan topla!",
             3: "Ekranda beliren kalplere süre dolmadan hızlıca dokun. Skorun arttıkça tempo hızlanır ve aynı anda daha fazla kalp çıkar!",
             4: "Çukurlardan çıkan kurtlara dokunarak onları avla ve puan kazan. Sakın tavşan dostlarına dokunma!",
             5: "Parmağını ekranda kaydırarak tavşanı yönet. Yukarıdan düşen havuç ve yıldızları topla, bombalardan uzak dur!",
-            6: "Hızla kayan kutuyu tam ortadaki hedef h hizada yakalamak için ekrana dokun. Zamanlamayı kaçırırsan canın gider!",
+            6: "Hızla kayan kutuyu tam ortadaki hedef hizada yakalamak için ekrana dokun. Zamanlamayı kaçırırsan canın gider!",
             7: "Ekranda sırayla gösterilen sembolleri aklında tut ve ardından doğru sırayla butonlara dokunarak deseni tamamla!"
         };
+
+        function openAllInstructions() {
+            document.getElementById('all-instructions-modal').style.display = 'flex';
+        }
+        function closeAllInstructions() {
+            document.getElementById('all-instructions-modal').style.display = 'none';
+        }
 
         function toggleInstruction() {
             const infoBox = document.getElementById('instruction-text');
@@ -358,9 +399,9 @@
             loop();
         }
 
-        /* ================= 2. BUNNY RUSH (TABAKALI ZEMİN) ================= */
+        /* ================= 2. BUNNY RUSH (PEMBE ZEMİN & BEYAZ ARKA PLAN) ================= */
         function initBunnyRush() {
-            let groundY = 360; // Zemin başlangıç çizgisi
+            let groundY = 380;
             let bY = groundY, bV = 0, gravity = 0.55, isGrounded = true;
             let obstacles = [], frame = 0, speed = 3.2;
 
@@ -371,10 +412,11 @@
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
 
-                // Zemin / Tabaka Görseli
-                if (assets['background.png'].complete) {
-                    ctx.drawImage(assets['background.png'], 0, 420, 360, 80);
-                }
+                // Pembe Tatlı Zemin Çizimi
+                ctx.fillStyle = "#ffb3d9";
+                ctx.fillRect(0, 430, 360, 70);
+                ctx.fillStyle = "#ff66b2";
+                ctx.fillRect(0, 426, 360, 4);
 
                 frame++; speed += 0.0008;
                 bV += gravity; bY += bV;
@@ -387,9 +429,9 @@
 
                 for (let i = obstacles.length - 1; i >= 0; i--) {
                     let obs = obstacles[i]; obs.x -= speed;
-                    ctx.drawImage(assets[obs.type], obs.x, 382, 38, 38);
+                    ctx.drawImage(assets[obs.type], obs.x, 392, 36, 36);
 
-                    if (obs.x < 85 && obs.x > 45 && bY > 330) {
+                    if (obs.x < 85 && obs.x > 45 && bY > 345) {
                         lives--; updateUI();
                         obstacles.splice(i, 1);
                         if (lives <= 0) return triggerGameOver();
@@ -398,7 +440,7 @@
                     if (obs.x < -40) obstacles.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 48, 60);
+                ctx.drawImage(assets['BunnyRun.gif'], 50, bY, 48, 50);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
@@ -516,7 +558,7 @@
             loop();
         }
 
-        /* ================= 5. CARROT CATCH (TABAKALI ZEMİN) ================= */
+        /* ================= 5. CARROT CATCH (PEMBE ZEMİN & BEYAZ ARKA PLAN) ================= */
         function initCarrotCatch() {
             let bX = 155, items = [], frame = 0, speed = 2.8;
 
@@ -525,10 +567,11 @@
             function loop() {
                 ctx.clearRect(0, 0, 360, 500);
 
-                // Zemin / Tabaka Görseli
-                if (assets['background.png'].complete) {
-                    ctx.drawImage(assets['background.png'], 0, 420, 360, 80);
-                }
+                // Pembe Tatlı Zemin Çizimi
+                ctx.fillStyle = "#ffb3d9";
+                ctx.fillRect(0, 430, 360, 70);
+                ctx.fillStyle = "#ff66b2";
+                ctx.fillRect(0, 426, 360, 4);
 
                 frame++; speed += 0.0009;
 
@@ -542,16 +585,16 @@
                     let it = items[i]; it.y += speed;
                     ctx.drawImage(assets[it.type], it.x, it.y, 32, 32);
 
-                    if (it.y > 350 && it.x > bX - 22 && it.x < bX + 52) {
+                    if (it.y > 360 && it.x > bX - 22 && it.x < bX + 52) {
                         if (it.type === 'carrot.png') score += 10;
                         else if (it.type === 'star.png') score += 25;
                         else { lives--; if (lives <= 0) return triggerGameOver(); }
                         updateUI(); items.splice(i, 1); continue;
                     }
-                    if (it.y > 420) items.splice(i, 1);
+                    if (it.y > 430) items.splice(i, 1);
                 }
 
-                ctx.drawImage(assets['BunnyRun.gif'], bX, 360, 50, 60);
+                ctx.drawImage(assets['BunnyRun.gif'], bX, 375, 50, 55);
                 if (!isGameOver) gameLoopId = requestAnimationFrame(loop);
             }
             loop();
